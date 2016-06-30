@@ -35,6 +35,7 @@ from taiga.permissions.services import is_project_admin, is_project_owner
 
 from . import models
 from . import services
+from .custom_attributes.serializers import EpicCustomAttributeSerializer
 from .custom_attributes.serializers import UserStoryCustomAttributeSerializer
 from .custom_attributes.serializers import TaskCustomAttributeSerializer
 from .custom_attributes.serializers import IssueCustomAttributeSerializer
@@ -341,6 +342,8 @@ class ProjectDetailSerializer(ProjectSerializer):
     priorities = PrioritySerializer(many=True, required=False)               # Issues
     severities = SeveritySerializer(many=True, required=False)
 
+    epic_custom_attributes = EpicCustomAttributeSerializer(source="epiccustomattributes",
+                                                           many=True, required=False)
     userstory_custom_attributes = UserStoryCustomAttributeSerializer(source="userstorycustomattributes",
                                                                      many=True, required=False)
     task_custom_attributes = TaskCustomAttributeSerializer(source="taskcustomattributes",

@@ -67,6 +67,11 @@ class BaseCustomAttributeSerializer(ModelSerializer):
         return self._validate_integrity_between_project_and_name(attrs, source)
 
 
+class EpicCustomAttributeSerializer(BaseCustomAttributeSerializer):
+    class Meta(BaseCustomAttributeSerializer.Meta):
+        model = models.EpicCustomAttribute
+
+
 class UserStoryCustomAttributeSerializer(BaseCustomAttributeSerializer):
     class Meta(BaseCustomAttributeSerializer.Meta):
         model = models.UserStoryCustomAttribute
@@ -120,6 +125,15 @@ class BaseCustomAttributesValuesSerializer(ModelSerializer):
             raise ValidationError(_("It contain invalid custom fields."))
 
         return attrs
+
+
+class EpicCustomAttributesValuesSerializer(BaseCustomAttributesValuesSerializer):
+    _custom_attribute_model = models.EpicCustomAttribute
+    _container_model = "epics.Epic"
+    _container_field = "epic"
+
+    class Meta(BaseCustomAttributesValuesSerializer.Meta):
+        model = models.EpicCustomAttributesValues
 
 
 class UserStoryCustomAttributesValuesSerializer(BaseCustomAttributesValuesSerializer):
