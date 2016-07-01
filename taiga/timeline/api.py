@@ -87,6 +87,7 @@ class TimelineViewSet(ReadOnlyListViewSet):
                     event_type::text = ANY('{issues.issue.change,
                                              tasks.task.change,
                                              userstories.userstory.change,
+                                             epics.epic.change,
                                              wiki.wikipage.change}'::text[])
                 )
                 """])
@@ -94,6 +95,7 @@ class TimelineViewSet(ReadOnlyListViewSet):
             qs = qs.exclude(event_type__in=["issues.issue.delete",
                                             "tasks.task.delete",
                                             "userstories.userstory.delete",
+                                            "epics.epic.delete",
                                             "wiki.wikipage.delete",
                                             "projects.project.change"])
 

@@ -53,7 +53,8 @@ def build_project_namespace(project:object):
     return "{0}:{1}".format("project", project.id)
 
 
-def _add_to_object_timeline(obj:object, instance:object, event_type:str, created_datetime:object, namespace:str="default", extra_data:dict={}):
+def _add_to_object_timeline(obj:object, instance:object, event_type:str, created_datetime:object,
+                            namespace:str="default", extra_data:dict={}):
     assert isinstance(obj, Model), "obj must be a instance of Model"
     assert isinstance(instance, Model), "instance must be a instance of Model"
     from .models import Timeline
@@ -75,12 +76,14 @@ def _add_to_object_timeline(obj:object, instance:object, event_type:str, created
     )
 
 
-def _add_to_objects_timeline(objects, instance:object, event_type:str, created_datetime:object, namespace:str="default", extra_data:dict={}):
+def _add_to_objects_timeline(objects, instance:object, event_type:str, created_datetime:object,
+                             namespace:str="default", extra_data:dict={}):
     for obj in objects:
         _add_to_object_timeline(obj, instance, event_type, created_datetime, namespace, extra_data)
 
 
-def _push_to_timeline(objects, instance:object, event_type:str, created_datetime:object, namespace:str="default", extra_data:dict={}):
+def _push_to_timeline(objects, instance:object, event_type:str, created_datetime:object,
+                      namespace:str="default", extra_data:dict={}):
     if isinstance(objects, Model):
         _add_to_object_timeline(objects, instance, event_type, created_datetime, namespace, extra_data)
     elif isinstance(objects, QuerySet) or isinstance(objects, list):
@@ -90,7 +93,8 @@ def _push_to_timeline(objects, instance:object, event_type:str, created_datetime
 
 
 @app.task
-def push_to_timelines(project_id, user_id, obj_app_label, obj_model_name, obj_id, event_type, created_datetime, extra_data={}):
+def push_to_timelines(project_id, user_id, obj_app_label, obj_model_name, obj_id, event_type,
+                      created_datetime, extra_data={}):
     ObjModel = apps.get_model(obj_app_label, obj_model_name)
     try:
         obj = ObjModel.objects.get(id=obj_id)
@@ -158,6 +162,7 @@ def filter_timeline_for_user(timeline, user):
     content_types = {
         "view_project": ContentType.objects.get(app_label="projects", model="project"),
         "view_milestones": ContentType.objects.get(app_label="milestones", model="milestone"),
+        "view_epic": ContentType.objects.get(app_label="epics", model="epic"),
         "view_us": ContentType.objects.get(app_label="userstories", model="userstory"),
         "view_tasks": ContentType.objects.get(app_label="tasks", model="task"),
         "view_issues": ContentType.objects.get(app_label="issues", model="issue"),
@@ -183,7 +188,8 @@ def filter_timeline_for_user(timeline, user):
             if membership.is_admin:
                 tl_filter |= Q(project=membership.project)
             else:
-                data_content_types = list(filter(None, [content_types.get(a, None) for a in membership.role.permissions]))
+                data_content_types = list(filter(None, [content_types.get(a, None) for a in
+                                                                    membership.role.permissions]))
                 data_content_types.append(membership_content_type)
                 tl_filter |= Q(project=membership.project, data_content_type__in=data_content_types)
 
@@ -231,7 +237,6 @@ def register_timeline_implementation(typename:str, event_type:str, fn=None):
     return _wrapper
 
 
-
 def extract_project_info(instance):
     return {
         "id": instance.pk,
@@ -252,6 +257,14 @@ def extract_milestone_info(instance):
         "id": instance.pk,
         "slug": instance.slug,
         "name": instance.name,
+    }
+
+
+def extract_epic_info(instance):
+    return {
+        "id": instance.pk,
+        "ref": instance.ref,
+        "subject": instance.subject,
     }
 
 
