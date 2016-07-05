@@ -118,3 +118,8 @@ class I18NJsonField(serpy.Field):
     def to_native(self, obj):
         i18n_obj = self.translate_values(obj)
         return i18n_obj
+
+
+class FileField(serpy.Field):
+    def to_value(self, value):
+        return value.name
